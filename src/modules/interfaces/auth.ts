@@ -15,5 +15,6 @@ export interface AuthService {
   loginWithEmailAndPassword: (email: string, password: string) => Promise<AuthUser | null>,
   loginWithGoogle: () => Promise<AuthUser | null>;
   loginWithApple: () => Promise<AuthUser | null>;
+  logout: () => Promise<void>;
   subscribe: (callback: (user: AuthUser | null) => void) => () => void;
 }

@@ -1,4 +1,4 @@
-import { onAuthStateChanged, signInWithEmailAndPassword } from "@react-native-firebase/auth"
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "@react-native-firebase/auth"
 import type { Auth, User } from "@react-native-firebase/auth"
 import type { AuthService, AuthUser } from "@/modules/interfaces/auth"
 
@@ -24,6 +24,10 @@ export class FirebaseAuthService implements AuthService {
 
   async loginWithApple(): Promise<AuthUser | null> {
     throw new Error("Not implemented")
+  }
+
+  async logout(): Promise<void> {
+    await signOut(this.#authModule)
   }
 
   subscribe(callback: (user: AuthUser | null) => void): () => void {
