@@ -1,11 +1,18 @@
 import { useContext, useState } from 'react';
 import { View } from 'react-native';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Text } from '@/components/ui/text';
+import { getAuthErrorMessage } from '@/lib/firebase-auth-error';
 import { authContext } from '@/modules/context/auth-context';
+
+const loginSchema = z.object({
+  email: z.string().trim().min(1, 'Email is required.').email('Enter a valid email address.'),
+  password: z.string().min(1, 'Password is required.'),
+});
 
 export default function Login() {
   const auth = useContext(authContext);
@@ -17,11 +24,18 @@ export default function Login() {
   async function handleSubmit() {
     if (!auth) return;
     setError(null);
+
+    const result = loginSchema.safeParse({ email, password });
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await auth.authService.loginWithEmailAndPassword(email, password);
-    } catch {
-      setError('Invalid email or password');
+      await auth.authService.loginWithEmailAndPassword(result.data.email, result.data.password);
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
       setSubmitting(false);
     }
   }
