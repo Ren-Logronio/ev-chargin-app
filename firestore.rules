@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /artists/{artistId} {
+      allow read: if true;
+    }
+    
+    match /artworks/{artworkId} {
+      allow read: if true;
+    }
+    
+    match /artworks/{docs=**}/visits/{visitId} {
+    	allow read: if true;
+    }
+    
+    match /artwork_listings/{listId} {
+      allow read: if true;
+    }
+    
+    match /app_file_caches/{cacheId} {
+      allow read: if true;
+    }
+    
+    match /references/{refId} {
+      allow read: if true;
+    }
+    
+    match /reference-mappings/{mapId} {
+      allow read: if true;
+    }
+    
+    match /app-configs/{config} {
+    	allow read: if true;
+    }
+    
+    match /{doc=**} {
+    	allow read, create, delete: if isAdmin();
+      allow update: if isAdmin() && (hasSimilarAlias() || hasNoAlias());
+    }
+    
+    function isAdmin() {
+      return request.auth != null && request.auth.token.firebase.sign_in_provider == "password" && exists(/databases/$(database)/documents/app_admins/$(request.auth.token.email));
+    }
+    
+    function hasSimilarAlias() {
+    	return "alias" in resource.data && "alias" in request.resource.data && resource.data.alias == request.resource.data.alias;
+    }
+    
+    function hasNoAlias() {
+    	return !("alias" in request.resource.data) && !request.resource.data.diff(resource.data).affectedKeys()
+               .hasAny(['alias']);
+    }
+  }
+}

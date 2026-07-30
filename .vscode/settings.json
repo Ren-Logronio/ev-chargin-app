@@ -1,0 +1,13 @@
+{
+  "files.associations": {
+    "*.postcss": "css",
+    "*.pcss": "css"
+  },
+  "css.lint.unknownAtRules": "ignore",
+  "editor.quickSuggestions": {
+    "other": false,
+    "comments": false,
+    "strings": false
+  },
+  "editor.inlineSuggest.enabled": false
+}

@@ -1,0 +1,18 @@
+{
+  "file_types": {
+    "CSS": ["postcss", "pcss"]
+  },
+  "lsp": {
+    "vscode-css-language-server": {
+      "settings": {
+        "css": {
+          "lint": {
+            "unknownAtRules": "ignore"
+          }
+        }
+      }
+    }
+  },
+  "show_completions_on_input": false,
+  "show_edit_predictions": false,
+}
