@@ -4,19 +4,46 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before 
 
 # Other Skills
 
-Read https://docs.expo.dev/llms.txt
+Read .agents/skills/nativewind-styling/SKILL.md if task involves styling via tailwind
+(`className`, `tailwind.config.js`, `src/global.css`, dark mode, platform variants). This
+pins to this repo's exact `nativewind`/`tailwindcss` versions and already-wired config —
+re-derive from https://www.nativewind.dev/llms.txt only if the installed version has
+moved on from what's documented there.
 
-Read https://www.nativewind.dev/llms.txt if tasks involves styling via tailwind
+Read .agents/skills/react-native-reusables/SKILL.md if task involves creating,
+modifying, or adding components (react-native-reusables). This pins to this repo's
+exact `components.json` setup and already-installed components — re-derive from
+https://reactnativereusables.com/docs only if the CLI package version has moved on
+from what's documented there.
 
-Read https://reactnativereusables.com/docs if tasks involves creating, modifying, and adding components
+Read the following if task involves interfacing with firebase from the app (client
+SDK, not Cloud Functions authoring — see the Firebase functions section below for
+that): `.agents/skills/rnfirebase-auth/SKILL.md` (sign-in/sign-up/sign-out, auth
+state), `.agents/skills/rnfirebase-firestore/SKILL.md` (reads/writes/queries/
+real-time listeners), `.agents/skills/rnfirebase-messaging/SKILL.md` (push
+notifications), `.agents/skills/rnfirebase-analytics/SKILL.md` (event/user-property
+tracking), `.agents/skills/rnfirebase-storage/SKILL.md` (file upload/download), or
+`.agents/skills/rnfirebase-functions/SKILL.md` (calling deployed callables). These
+pin to this repo's exact installed version (`@react-native-firebase` v26, modular API
+only) — re-derive from https://rnfirebase.io/ only if the installed version has moved
+on from what's documented there.
 
-Read https://rnfirebase.io/ if task involves interfacing with firebase
-
-Read https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/your-first-animation and https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/introduction/ and also https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/reanimated-interactions if task involves animating ui or interactive ui
+Read .agents/skills/reanimated-animations/SKILL.md if task involves animating UI
+(react-native-reanimated). Read .agents/skills/gesture-handler-interactions/SKILL.md
+if task involves recognizing touch gestures (react-native-gesture-handler). Read
+.agents/skills/reanimated-gesture-interactivity/SKILL.md if task involves combining
+both (drag, swipe, pinch-zoom, press feedback driven directly by touch). These
+pin to this repo's exact installed versions — note the docs.swmansion.com
+gesture-handler site now defaults to a newer, incompatible hook-based API; the
+`legacy-gestures/*` docs path matches what's installed here.
 
 # Firebase functions
 
-Read .agents\skills for firebase functions tasks
+Read skills (`extension-to-functions-codebase`, `firebase-basics`, `firebase-firestore`,
+`firebase-security-rules-auditor`, `firebase-auth-basics`) only apply to tasks
+that require writing/editing Firebase Cloud Functions code or running Firebase
+CLI commands (deploy, project setup, emulators, etc.) — not general app code
+that merely calls Firebase from the client (see `rnfirebase.io` above for that).
 
 # Module architecture (src/modules)
 
