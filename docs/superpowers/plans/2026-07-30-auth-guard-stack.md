@@ -364,3 +364,202 @@ Run: `npm run start` (or `npm run android` / `npm run ios` for a device/simulato
 git add src/app/_layout.tsx
 git commit -m "feat: guard routes with Stack.Protected based on auth state"
 ```
+
+---
+
+### Task 6: Firebase auth error messages + zod input validation
+
+**Added after task review:** Task 4's review flagged the logout button's fire-and-forget `authService.logout()` call as an unhandled-rejection risk. The human partner requested, beyond just catching it: a shared utility that translates Firebase Auth error codes into human-readable messages (used by both login and logout), and zod validation for the login form's email/password fields before they ever reach Firebase.
+
+**Files:**
+- Create: `src/lib/firebase-auth-error.ts`
+- Modify: `src/app/login.tsx`
+- Modify: `src/app/index.tsx`
+- Modify: `package.json`, `package-lock.json` (add `zod` dependency)
+
+**Interfaces:**
+- Consumes: `AuthService.loginWithEmailAndPassword`, `AuthService.logout` (unchanged), `authContext` (unchanged).
+- Produces: `getAuthErrorMessage(error: unknown): string` from `@/lib/firebase-auth-error` — used by both screens' catch blocks.
+
+- [ ] **Step 1: Install zod**
+
+```bash
+npm install zod@^4.4.3
+```
+
+- [ ] **Step 2: Write the Firebase error translator**
+
+Create `src/lib/firebase-auth-error.ts`:
+
+```ts
+export function getAuthErrorMessage(error: unknown): string {
+  const code =
+    typeof error === 'object' && error !== null && 'code' in error
+      ? String((error as { code: unknown }).code)
+      : null;
+
+  switch (code) {
+    case 'auth/invalid-email':
+      return 'Enter a valid email address.';
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+      return 'Invalid email or password.';
+    case 'auth/user-disabled':
+      return 'This account has been disabled.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Try again later.';
+    case 'auth/network-request-failed':
+      return 'Network error. Check your connection and try again.';
+    default:
+      return 'Something went wrong. Please try again.';
+  }
+}
+```
+
+- [ ] **Step 3: Add zod validation and error translation to the login screen**
+
+Replace the full contents of `src/app/login.tsx`:
+
+```tsx
+import { useContext, useState } from 'react';
+import { View } from 'react-native';
+import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Text } from '@/components/ui/text';
+import { getAuthErrorMessage } from '@/lib/firebase-auth-error';
+import { authContext } from '@/modules/context/auth-context';
+
+const loginSchema = z.object({
+  email: z.string().trim().min(1, 'Email is required.').email('Enter a valid email address.'),
+  password: z.string().min(1, 'Password is required.'),
+});
+
+export default function Login() {
+  const auth = useContext(authContext);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit() {
+    if (!auth) return;
+    setError(null);
+
+    const result = loginSchema.safeParse({ email, password });
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await auth.authService.loginWithEmailAndPassword(result.data.email, result.data.password);
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <View className="flex-1 justify-center gap-4 bg-background p-6">
+      <Text variant="h2">Log in</Text>
+
+      <View className="gap-1.5">
+        <Label nativeID="loginEmailLabel">Email</Label>
+        <Input
+          aria-labelledby="loginEmailLabel"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          placeholder="you@example.com"
+        />
+      </View>
+
+      <View className="gap-1.5">
+        <Label nativeID="loginPasswordLabel">Password</Label>
+        <Input
+          aria-labelledby="loginPasswordLabel"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          textContentType="password"
+          placeholder="Password"
+        />
+      </View>
+
+      {error ? (
+        <Text variant="small" className="text-destructive">
+          {error}
+        </Text>
+      ) : null}
+
+      <Button onPress={handleSubmit} disabled={submitting}>
+        <Text>{submitting ? 'Logging in…' : 'Log in'}</Text>
+      </Button>
+    </View>
+  );
+}
+```
+
+- [ ] **Step 4: Catch and display logout errors on the home screen**
+
+Replace the full contents of `src/app/index.tsx`:
+
+```tsx
+import { useContext, useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { View } from 'react-native';
+
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import { getAuthErrorMessage } from '@/lib/firebase-auth-error';
+import { authContext } from '@/modules/context/auth-context';
+
+export default function Index() {
+  const auth = useContext(authContext);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleLogout() {
+    if (!auth) return;
+    setError(null);
+    try {
+      await auth.authService.logout();
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    }
+  }
+
+  return (
+    <View className="flex-1 items-center justify-center gap-4 bg-background">
+      <Text variant="h1">Hello</Text>
+      {error ? (
+        <Text variant="small" className="text-destructive">
+          {error}
+        </Text>
+      ) : null}
+      <Button variant="outline" onPress={handleLogout}>
+        <Text>Log out</Text>
+      </Button>
+      <StatusBar style="auto" />
+    </View>
+  );
+}
+```
+
+- [ ] **Step 5: Type-check**
+
+Run: `npx tsc --noEmit`
+Expected: no errors.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/lib/firebase-auth-error.ts src/app/login.tsx src/app/index.tsx package.json package-lock.json
+git commit -m "feat: translate Firebase auth errors and validate login input with zod"
+```
