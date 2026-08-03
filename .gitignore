@@ -38,8 +38,4 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# Firebase App Configs
-GoogleService-Info.plist
-google-services.json
-
 .kotlin*

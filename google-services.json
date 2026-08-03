@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1064456210195",
+    "firebase_url": "https://artiverse-440712-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "artiverse-440712",
+    "storage_bucket": "artiverse-440712.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064456210195:android:a0fab2314ad6824a41bce6",
+        "android_client_info": {
+          "package_name": "com.innoendo.eca"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1064456210195-ad05jhk3rkohk17eisgic4knaoj6ntou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx19bnHZ798I8TFvjAgpSi-GN4RWPKObY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1064456210195-ad05jhk3rkohk17eisgic4knaoj6ntou.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
