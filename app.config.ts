@@ -95,9 +95,7 @@ const config: ExpoConfig = {
   "experiments": {
     "typedRoutes": true
   },
-  "runtimeVersion": {
-    "policy": "fingerprint"
-  },
+  "runtimeVersion": "1.0.0",
   "updates": {
     "url": "https://u.expo.dev/6b5b622c-859d-4e60-909c-136adc42bff4"
   },
