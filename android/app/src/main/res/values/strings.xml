@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">unnamed-project</string>
+  <string name="app_name">Electric Chargin App</string>
+  <string name="expo_runtime_version">file:fingerprint</string>
 </resources>

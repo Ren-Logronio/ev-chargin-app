@@ -46,6 +46,7 @@ import {
   setUserProperties,
   setAnalyticsCollectionEnabled,
   setConsent,
+  setDefaultEventParameters,
   getAppInstanceId,
 } from '@react-native-firebase/analytics'
 ```
@@ -88,6 +89,20 @@ Call `setUserId(analytics, null)` on sign-out so subsequent (pre-next-login) eve
 aren't misattributed to the previous user — wire this into
 `FirebaseAuthService`/`FirebaseAuthProvider`'s sign-out path rather than scattering it
 across screens.
+
+## Default event parameters
+
+`setDefaultEventParameters` attaches a fixed set of params to every subsequent event
+(including the predefined `log*` helpers) without having to thread them through each
+call site — useful for things like `app_version`/`build_env` that should tag
+everything:
+
+```ts
+await setDefaultEventParameters(analytics, { build_env: 'production' })
+
+// clear defaults by passing no params / undefined
+await setDefaultEventParameters(analytics)
+```
 
 ## Screen tracking
 

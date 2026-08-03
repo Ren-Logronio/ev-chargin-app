@@ -26,10 +26,19 @@ metadata:
 A declarative API exposing native touch/gesture recognition to React Native,
 replacing RN's built-in Gesture Responder System for better performance and control.
 
-The app root must be wrapped once in `GestureHandlerRootView` (already required by
-Expo Router apps; check `src/app/_layout.tsx` before adding another one) — gestures
-are not recognized outside of it, and composition (`Race`/`Simultaneous`/`Exclusive`)
-only works between gestures mounted under the *same* root view.
+The app root must be wrapped once in `GestureHandlerRootView` — gestures are not
+recognized outside of it, and composition (`Race`/`Simultaneous`/`Exclusive`) only
+works between gestures mounted under the *same* root view.
+
+**Check `src/app/_layout.tsx` before assuming this is already there.** Some
+`react-navigation` JS-stack setups auto-wrap screens in `GestureHandlerRootView`
+internally, which can make this feel automatic — but this repo's `RootLayout` uses
+`expo-router/stack`, which resolves to the **native stack** (`createNativeStackNavigator`
+from `react-native-screens`), not the JS stack that does that auto-wrap. As of this
+writing `src/app/_layout.tsx` does **not** wrap anything in `GestureHandlerRootView` —
+add it explicitly (wrapping `GuardedStack`/`ThemeProvider`) before relying on any
+`Gesture.X()` + `GestureDetector` pattern in this repo, or gestures will silently fail
+to recognize.
 
 ```tsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

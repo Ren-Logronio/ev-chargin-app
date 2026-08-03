@@ -82,7 +82,7 @@ const pan = Gesture.Pan()
       translateX.value = withTiming(
         Math.sign(translateX.value) * CARD_WIDTH * 1.5,
         { duration: 200 },
-        (finished) => { if (finished) runOnJS(onDismiss)(); }
+        (finished) => { if (finished) scheduleOnRN(onDismiss); }
       );
     } else {
       translateX.value = withDecay({ velocity: e.velocityX, clamp: [-CARD_WIDTH, CARD_WIDTH], rubberBandEffect: true });
@@ -96,7 +96,8 @@ const style = useAnimatedStyle(() => ({
 ```
 Notes:
 - Calling a JS-side callback (`onDismiss` — e.g. removing the item from a list/store)
-  from inside a worklet requires `scheduleOnRN`/`runOnJS`; never call it directly.
+  from inside a worklet requires `scheduleOnRN` (not a bare call); see the checklist
+  below for why `scheduleOnRN` and not `runOnJS`.
 - `withDecay`'s `rubberBandEffect: true` + `clamp` gives a natural "snap back if not
   far enough" feel without hand-rolling a threshold spring.
 
@@ -146,9 +147,14 @@ janky" bugs, not the animation math.
 
 ## Checklist before shipping a gesture-driven animation
 
-1. Root is wrapped in `GestureHandlerRootView` (check `src/app/_layout.tsx`).
+1. Root is wrapped in `GestureHandlerRootView` — **as of this writing,
+   `src/app/_layout.tsx` does not have this wrapper** (see the version-trap note in
+   `../gesture-handler-interactions/SKILL.md`'s setup section); add it before this
+   feature ships, don't assume it's already there.
 2. Any JS-side side effect from a worklet callback (navigation, store update,
-   haptics) goes through `scheduleOnRN`/`runOnJS` — never called bare.
+   haptics) goes through `scheduleOnRN` — never called bare. Prefer `scheduleOnRN`
+   over `runOnJS`, which is deprecated in the installed `react-native-worklets` (still
+   works, but new code shouldn't use it — see `../reanimated-animations/SKILL.md`).
 3. `onChange` deltas are accumulated (`+=`); `onUpdate` totals are assigned (`=`).
 4. Gesture instances aren't reused across more than one `GestureDetector`.
 5. Composition (`Simultaneous`/`Race`/`Exclusive`) chosen deliberately, not left at

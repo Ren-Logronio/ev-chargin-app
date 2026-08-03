@@ -30,6 +30,7 @@ import {
   requestPermission,
   AuthorizationStatus,
   getToken,
+  deleteToken,
   onTokenRefresh,
   onMessage,
   setBackgroundMessageHandler,
@@ -65,6 +66,16 @@ const unsubscribe = onTokenRefresh(messaging, newToken => { /* persist */ })
 Send this token to your backend (e.g. store on the user's Firestore doc, per the
 `arrayUnion`/`arrayRemove` pattern in the `rnfirebase-firestore` skill) so server-side
 code can target the device.
+
+On sign-out, call `deleteToken(messaging)` and remove the stored token from the
+backend — otherwise a subsequent user on the same device keeps receiving the
+previous user's pushes until a new token happens to be generated. Wire this into
+the sign-out path (mirroring `setUserId(analytics, null)` in the `rnfirebase-analytics`
+skill) rather than leaving stale tokens behind.
+
+```ts
+await deleteToken(messaging)
+```
 
 ## Foreground messages
 

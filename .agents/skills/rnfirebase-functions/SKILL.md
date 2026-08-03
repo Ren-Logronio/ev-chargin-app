@@ -19,7 +19,12 @@ functions section) — don't conflate the two; this module has no knowledge of t
 ## Modular imports
 
 ```ts
-import { getFunctions, httpsCallable, connectFunctionsEmulator } from '@react-native-firebase/functions'
+import {
+  getFunctions,
+  httpsCallable,
+  httpsCallableFromUrl,
+  connectFunctionsEmulator,
+} from '@react-native-firebase/functions'
 ```
 
 ## Calling a callable function
@@ -34,6 +39,34 @@ response.data // whatever the Cloud Function returned
 `httpsCallable(functions, name)` returns a reusable callable — build it once (e.g. as
 a module-level const or inside a service class's constructor) rather than re-creating
 it on every call.
+
+### Per-call options
+
+`httpsCallable` takes an optional third arg, `HttpsCallableOptions`:
+
+```ts
+const listProducts = httpsCallable(functions, 'listProducts', {
+  timeout: 10000, // ms; converted internally as needed per platform
+  limitedUseAppCheckTokens: false, // set true only if the function has App Check replay protection enabled
+})
+```
+
+There's also `httpsCallableFromUrl(functions, url, options?)` for calling a callable
+by its full URL instead of by registered name (same signature/return shape as
+`httpsCallable`) — useful for a callable deployed to a custom domain.
+
+### Streaming callables
+
+The callable returned by `httpsCallable`/`httpsCallableFromUrl` exposes a `.stream()`
+method for Cloud Functions that stream partial results (e.g. a Genkit flow):
+
+```ts
+const { stream, data } = await listProducts.stream({ category: 'chargers' })
+for await (const chunk of stream) {
+  // partial results as they arrive
+}
+const finalResult = await data // resolves once the stream completes
+```
 
 ## Region / custom domain
 

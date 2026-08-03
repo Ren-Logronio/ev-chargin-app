@@ -38,21 +38,30 @@ behavior that Nativewind doesn't emulate on native.
 
 ## Dark mode
 
-`darkMode: 'class'` comes from `nativewind/preset` — Nativewind syncs a `dark` class onto
-the root automatically based on `Appearance`/system color scheme, so `dark:` variant
-classes (`className="bg-white dark:bg-black"`) work with **no manual wiring** in this
-project. This is separate from `src/app/_layout.tsx:33`'s own `useColorScheme()` call from
+Neither `tailwind.config.js` nor `nativewind/preset` sets a `darkMode` key in this
+project, so it resolves to Tailwind's own default, **`'media'`** — `dark:` variant
+classes (`className="bg-white dark:bg-black"`) track OS `Appearance`/system color
+scheme directly with **no manual wiring**, which is why it works out of the box. This
+is separate from `src/app/_layout.tsx:33`'s own `useColorScheme()` call from
 `react-native`, which only feeds React Navigation's `NAV_THEME` (a JS object, not
 classNames) — don't confuse the two or assume changing one affects the other.
 
-If a component needs the current scheme in JS logic (not just classNames), use
+If a component needs the current scheme in JS logic (not just classNames), read it via
 Nativewind's own `useColorScheme()` from `nativewind`, not `react-native`'s — only
 Nativewind's version is guaranteed to match the `dark:` class state:
 
 ```ts
 import { useColorScheme } from 'nativewind'
-const { colorScheme, setColorScheme } = useColorScheme()
+const { colorScheme } = useColorScheme()
 ```
+
+**Don't call `setColorScheme()`/`toggleColorScheme()`** from this hook — with
+`darkMode` resolving to `'media'` in this project, both throw at runtime
+(`"Unable to manually set color scheme without using darkMode: class"`,
+thrown from `nativewind`'s `stylesheet.ts`). A manual light/dark toggle isn't wired up
+here; if one is ever needed, add `darkMode: 'class'` to `tailwind.config.js` first
+(this switches `dark:` from OS-driven to manually-toggled and is a real behavior
+change, not just an unlock of the setter).
 
 ## className usage and gotchas
 

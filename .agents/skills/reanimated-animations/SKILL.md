@@ -22,7 +22,9 @@ reference the old Reanimated babel plugin path, prefer this project's setup inst
 ## Setup (already done in this repo — for reference only)
 
 - `babel.config.js` plugin must be `'react-native-worklets/plugin'`, and it **must be
-  last** in the `plugins` array.
+  last**. In this repo's actual `babel.config.js` it's listed as the last entry of the
+  `presets` array (alongside `babel-preset-expo` and `nativewind/babel`), not a
+  separate `plugins` array — match that placement, don't add a new `plugins` array.
 - Root wrapper isn't Reanimated-specific; New Architecture is required (Fabric is on
   by default in Expo SDK 57 / RN 0.86).
 - Source: `docs/fundamentals/getting-started`

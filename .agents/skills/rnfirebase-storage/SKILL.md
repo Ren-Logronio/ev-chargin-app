@@ -32,8 +32,9 @@ import {
   getStorage,
   ref,
   putFile,
-  put,
-  putString,
+  uploadBytesResumable,
+  uploadString,
+  writeToFile,
   getDownloadURL,
   deleteObject,
   getMetadata,
@@ -42,6 +43,11 @@ import {
   listAll,
 } from '@react-native-firebase/storage'
 ```
+
+Note: there is **no bare `put`/`putString` export** (that's the internal `StorageReference`
+method name, not what's re-exported at the package root). The modular functions are named
+`uploadBytesResumable`/`uploadString`, matching the web SDK's naming — verified against
+`node_modules/@react-native-firebase/storage/lib/index.ts`.
 
 ## References
 
@@ -60,20 +66,26 @@ Three upload paths depending on what you have in hand:
 const task = putFile(fileRef, localUri)
 
 // a Blob/Uint8Array/ArrayBuffer already in memory
-await put(fileRef, blob)
+const task2 = uploadBytesResumable(fileRef, blob)
+await task2
 
 // a string — base64/base64url/data_url/raw
-await putString(fileRef, base64Data, 'base64')
+await uploadString(fileRef, base64Data, 'base64')
 ```
 
 `putFile` (and its download counterpart, downloading straight to a local path) are
 the two APIs unique to the native SDKs — the web `firebase-js-sdk` has no equivalent
 since browsers don't expose a real filesystem path.
 
+Do **not** use `uploadBytes`, `getBytes`, `getBlob`, or `getStream` — they exist as
+exports (for type-shape parity with the web SDK) but each just
+`throw new Error('...() is not implemented')` on React Native. Use
+`uploadBytesResumable` for in-memory uploads and `writeToFile` (below) for downloads.
+
 ### Progress and control
 
-`putFile`/`put` return a `Task`, not a bare promise — it's thenable but also emits
-progress:
+`putFile`/`uploadBytesResumable` return a `Task`, not a bare promise — it's thenable
+but also emits progress:
 
 ```ts
 task.on('state_changed', snapshot => {
@@ -81,6 +93,7 @@ task.on('state_changed', snapshot => {
 })
 task.pause()
 task.resume()
+task.cancel()
 await task // resolves like a promise once complete
 ```
 
@@ -90,12 +103,15 @@ await task // resolves like a promise once complete
 const url = await getDownloadURL(fileRef) // CDN URL, e.g. for an <Image source={{ uri: url }} />
 ```
 
-There's no bare "download to memory" call analogous to the web SDK's `getBytes` —
-for a local file, use the native-only `writeToFile`-style API if the installed
-version exposes one; **verify the exact export name and signature against this
-project's installed `node_modules/@react-native-firebase/storage` TypeScript
-definitions once added**, since the public docs excerpt for this method was thin at
-the time this skill was written.
+There's no bare "download to memory" call analogous to the web SDK's `getBytes` (that
+export throws `not implemented` on RN — see the gotcha above). For a local file,
+download straight to a device path with `writeToFile`, the native-only counterpart to
+`putFile`. It returns the same kind of `Task` as an upload (thenable, `.on('state_changed', ...)`, `.pause()`/`.resume()`/`.cancel()`):
+
+```ts
+const task = writeToFile(fileRef, localDestPath) // e.g. `${FileSystem.cacheDirectory}photo.jpg`
+await task
+```
 
 ## Metadata and deletion
 

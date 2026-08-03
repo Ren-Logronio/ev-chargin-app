@@ -22,6 +22,22 @@ import { getFirestore, collection, doc, getDoc } from '@react-native-firebase/fi
 const db = getFirestore()
 ```
 
+### Named databases
+
+`getFirestore()` with no args (or just an app) targets the `(default)` database.
+This project's Firestore instance is **not** `(default)` — `firebase.json` at the repo
+root declares `"database": "electro-project"`. Pass the database ID explicitly:
+
+```ts
+const db = getFirestore(getApp(), 'electro-project')
+// or, using the default app:
+const db = getFirestore('electro-project')
+```
+
+Every `Firestore` instance created from app code must use this database ID —
+`firebase.json` only controls what the Firebase CLI deploys rules/indexes to, it has
+no effect on which database the client SDK connects to at runtime.
+
 ## Where this fits this project's module architecture
 
 No Firestore-backed implementation exists yet under `src/modules`. When one is added

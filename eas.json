@@ -1,6 +1,8 @@
 {
   "build": {
     "preview": {
+      "channel": "preview",
+      "environment": "preview",
       "android": {
         "gradleCommand": ":app:assembleRelease",
         "buildType": "apk"
@@ -9,11 +11,17 @@
     },
     "development": {
       "developmentClient": true,
+      "environment": "development",
       "android": {
         "gradleCommand": ":app:assembleDebug",
         "buildType": "apk"
-      }
+      },
+      "channel": "development",
+      "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      "channel": "production",
+      "environment": "production"
+    }
   }
 }

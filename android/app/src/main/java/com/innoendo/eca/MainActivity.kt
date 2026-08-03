@@ -1,4 +1,4 @@
-package com.unnamedproject
+package com.innoendo.eca
 
 import android.os.Build
 import android.os.Bundle

@@ -56,13 +56,18 @@ context-menu, dialog, dropdown-menu, hover-card, input, label, menubar, popover,
 progress, radio-group, select, separator, skeleton, switch, tabs, text, textarea,
 toggle, toggle-group, tooltip.
 
-There's also a Clerk-oriented "Authentication" blocks section
-(`/docs/blocks/authentication`: sign-in-form, sign-up-form, forgot/reset-password,
-verify-email, social-connections, user-menu) — **this project uses Firebase Auth**
-(`src/modules/firebase-auth/`), not Clerk, so those blocks don't apply directly. Treat
-them only as a UI-layout reference if building a new auth screen, not as installable
-code, and re-wire any Clerk-specific logic to this project's `authContext`/
-`FirebaseAuthService` instead.
+There's also an "Authentication" blocks section (`/docs/blocks/authentication`) with
+**two variants of each block**: a plain one (`sign-in-form`, `sign-up-form`,
+`forgot-password-form`, `reset-password-form`, `verify-email-form`,
+`social-connections`, `user-menu`) and a `-clerk`-suffixed one (`sign-in-form-clerk`,
+etc.) that depends on `@clerk/expo`. Only the `-clerk` variants are Clerk-specific —
+the plain variants have **no auth-vendor dependency at all**, just layout plus
+`// TODO: Submit form...`/`// TODO: Sign out...` stubs where auth calls go. **This
+project uses Firebase Auth** (`src/modules/firebase-auth/`), so install the plain
+variant as real code (`npx @react-native-reusables/cli@latest add sign-in-form`) and
+fill its `TODO` stubs with this project's `authContext`/`FirebaseAuthService` calls —
+don't hand-roll the layout from scratch, and don't pull in the `-clerk` variant or
+`@clerk/expo`.
 
 ## Key differences from web shadcn/ui (don't port web patterns blindly)
 
