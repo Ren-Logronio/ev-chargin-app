@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { View } from 'react-native';
+import { View, Text as TextC } from 'react-native';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -43,6 +43,7 @@ export default function Login() {
   return (
     <View className="flex-1 justify-center gap-4 bg-background p-6">
       <Text variant="h2">Log in</Text>
+      <TextC className="text-red-500">test red</TextC>
 
       <View className="gap-1.5">
         <Label nativeID="loginEmailLabel">Email</Label>

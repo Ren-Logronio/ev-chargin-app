@@ -38,13 +38,15 @@ behavior that Nativewind doesn't emulate on native.
 
 ## Dark mode
 
-Neither `tailwind.config.js` nor `nativewind/preset` sets a `darkMode` key in this
-project, so it resolves to Tailwind's own default, **`'media'`** — `dark:` variant
-classes (`className="bg-white dark:bg-black"`) track OS `Appearance`/system color
-scheme directly with **no manual wiring**, which is why it works out of the box. This
-is separate from `src/app/_layout.tsx:33`'s own `useColorScheme()` call from
-`react-native`, which only feeds React Navigation's `NAV_THEME` (a JS object, not
-classNames) — don't confuse the two or assume changing one affects the other.
+`tailwind.config.js` sets `darkMode: 'class'` (matching the official RNR template).
+Nativewind's colorScheme starts by mirroring OS `Appearance`/system color scheme
+automatically, so `dark:` variant classes (`className="bg-white dark:bg-black"`) still
+track the system out of the box with **no manual wiring required** — `'class'` mode
+doesn't mean you must toggle it yourself, it just means a manual override becomes
+*possible*. This is separate from `src/app/_layout.tsx:33`'s own `useColorScheme()`
+call from `react-native`, which only feeds React Navigation's `NAV_THEME` (a JS
+object, not classNames) — don't confuse the two or assume changing one affects the
+other.
 
 If a component needs the current scheme in JS logic (not just classNames), read it via
 Nativewind's own `useColorScheme()` from `nativewind`, not `react-native`'s — only
@@ -52,16 +54,14 @@ Nativewind's version is guaranteed to match the `dark:` class state:
 
 ```ts
 import { useColorScheme } from 'nativewind'
-const { colorScheme } = useColorScheme()
+const { colorScheme, setColorScheme } = useColorScheme()
 ```
 
-**Don't call `setColorScheme()`/`toggleColorScheme()`** from this hook — with
-`darkMode` resolving to `'media'` in this project, both throw at runtime
-(`"Unable to manually set color scheme without using darkMode: class"`,
-thrown from `nativewind`'s `stylesheet.ts`). A manual light/dark toggle isn't wired up
-here; if one is ever needed, add `darkMode: 'class'` to `tailwind.config.js` first
-(this switches `dark:` from OS-driven to manually-toggled and is a real behavior
-change, not just an unlock of the setter).
+With `darkMode: 'class'`, `setColorScheme()`/`toggleColorScheme()` now work (they'd
+throw under the old `'media'` default). Calling `setColorScheme('dark' | 'light')`
+pins the scheme and stops it from following OS changes until `setColorScheme('system')`
+is called again — only reach for this if building an explicit in-app theme toggle, not
+for normal system-following dark mode which already works without it.
 
 ## className usage and gotchas
 

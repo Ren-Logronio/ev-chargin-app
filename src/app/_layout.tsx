@@ -1,11 +1,13 @@
+import '@/global.css';
+
 import { useContext } from 'react';
 import { Stack } from 'expo-router/stack';
 import { ThemeProvider } from 'expo-router/react-navigation';
 import { useColorScheme } from 'react-native';
+import { PortalHost } from '@rn-primitives/portal';
 
 import { NAV_THEME } from '@/lib/theme';
 
-import '@/global.css';
 import { authContext } from '@/modules/context/auth-context';
 import { FirebaseAuthProvider } from '@/modules/firebase-auth/providers/firebase-auth-provider';
 import { FirebaseAuthService } from '@/modules/firebase-auth/services/firebase-auth-service';
@@ -36,6 +38,7 @@ export default function RootLayout() {
     <FirebaseAuthProvider authService={authService}>
       <ThemeProvider value={colorScheme === 'dark' ? NAV_THEME.dark : NAV_THEME.light}>
         <GuardedStack />
+        <PortalHost />
       </ThemeProvider>
     </FirebaseAuthProvider>
   );
