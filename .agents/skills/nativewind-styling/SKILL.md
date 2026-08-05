@@ -28,10 +28,18 @@ behavior that Nativewind doesn't emulate on native.
   generates the other, per `../react-native-reusables/SKILL.md`.
 - `babel.config.js` — `jsxImportSource: "nativewind"` on `babel-preset-expo`, plus the
   `nativewind/babel` preset. Both are required for `className` to compile to styles at all.
-- `metro.config.js` — wraps the base config with `withNativeWind(config, { input:
-  'src/global.css', inlineRem: 16 })`. If Metro doesn't pick up a `tailwind.config.js` or
-  `global.css` change, clear the Metro cache (`expo start -c`) before assuming the styling
-  is wrong.
+- `metro.config.ts` — wraps the base config with `withNativeWind(config, { input:
+  './src/global.css', inlineRem: 16 })`. **This must live in `metro.config.ts`, not a
+  separate `metro.config.js`.** On this project's Expo/Metro version, when both files
+  exist Metro resolves and loads `metro.config.ts` directly and silently ignores
+  `metro.config.js` entirely — even a `metro.config.js` that requires and re-exports the
+  `.ts` file's config never actually runs, so any wrapping (like `withNativeWind`) placed
+  there is dead code. Symptom: no build/babel errors, `className` is still transformed by
+  the babel plugin, but zero styles ever apply anywhere, because
+  `node_modules/react-native-css-interop/.cache/<platform>.js` never gets populated (stays
+  at 0 bytes — check this file's size when styling "does nothing" and everything else looks
+  correctly configured). If Metro doesn't pick up a `tailwind.config.js` or `global.css`
+  change, clear the Metro cache (`expo start -c`) before assuming the styling is wrong.
 - `src/lib/utils.ts` — `cn()` (`twMerge(clsx(inputs))`). Use this whenever composing
   conditional or overridable class strings — never string-concatenate classNames by hand,
   since Tailwind class conflicts (e.g. two `p-*` values) need `twMerge`'s resolution order.
