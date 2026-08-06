@@ -12,16 +12,16 @@ import { getAuthErrorMessage } from '@/lib/firebase-auth-error';
 import { authContext } from '@/modules/context/auth-context';
 
 const INITIAL_REGION = {
-  latitude: 37.78825,
-  longitude: -122.4324,
-  latitudeDelta: 0.02,
-  longitudeDelta: 0.02,
+  latitude: 6.1164,
+  longitude: 125.1716,
+  latitudeDelta: 0.05,
+  longitudeDelta: 0.05,
 };
 
 const MOCK_STATIONS = [
-  { id: '1', title: 'Market St Supercharger', coordinate: { latitude: 37.78925, longitude: -122.4344 }, kw: 150, price: 0.42, distanceMiles: 0.3 },
-  { id: '2', title: 'Ferry Building Charge Hub', coordinate: { latitude: 37.78625, longitude: -122.4304 }, kw: 50, price: 0.35, distanceMiles: 0.6 },
-  { id: '3', title: 'Union Square Fast Charge', coordinate: { latitude: 37.79025, longitude: -122.4284 }, kw: 250, price: 0.48, distanceMiles: 0.9 },
+  { id: '1', title: 'KCC Mall Charge Hub', coordinate: { latitude: 6.1128, longitude: 125.175 }, kw: 150, price: 0.42, distanceMiles: 0.3 },
+  { id: '2', title: 'Gaisano Mall Supercharger', coordinate: { latitude: 6.1136, longitude: 125.1706 }, kw: 50, price: 0.35, distanceMiles: 0.6 },
+  { id: '3', title: 'Robinsons Place Fast Charge', coordinate: { latitude: 6.093, longitude: 125.1735 }, kw: 250, price: 0.48, distanceMiles: 0.9 },
 ];
 
 export default function Index() {

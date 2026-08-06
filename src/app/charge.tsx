@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { BlurMask, Canvas, Circle, Group, Path, Skia } from '@shopify/react-native-skia';
 import { useRouter } from 'expo-router';
-import { Easing, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { Easing, useDerivedValue, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,11 @@ import { Text } from '@/components/ui/text';
 
 const RING_SIZE = 260;
 const STROKE_WIDTH = 22;
+// Extra canvas bleed so the blurred glow (stroke + BlurMask spread) isn't clipped at the canvas edge.
+const CANVAS_PADDING = 60;
+const CANVAS_SIZE = RING_SIZE + CANVAS_PADDING * 2;
 const RADIUS = (RING_SIZE - STROKE_WIDTH) / 2;
-const CENTER = RING_SIZE / 2;
+const CENTER = CANVAS_SIZE / 2;
 
 const TRACK_COLOR = 'rgba(255, 255, 255, 0.08)';
 const RING_BACKDROP_COLOR = '#1d1d16';
@@ -32,6 +35,7 @@ export default function Charge() {
 
   const glowBlur = useSharedValue(14);
   const glowOpacity = useSharedValue(0.5);
+  const sweepAngle = useSharedValue((42 / 100) * 360);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -39,6 +43,10 @@ export default function Charge() {
     }, 400);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    sweepAngle.value = withTiming((percent / 100) * 360, { duration: 400, easing: Easing.linear });
+  }, [percent, sweepAngle]);
 
   useEffect(() => {
     glowBlur.value = withRepeat(
@@ -53,16 +61,18 @@ export default function Charge() {
     );
   }, [glowBlur, glowOpacity]);
 
-  const sweepAngle = (percent / 100) * 360;
   const trackPath = Skia.Path.Make();
   trackPath.addCircle(CENTER, CENTER, RADIUS);
 
-  const progressPath = Skia.Path.Make();
-  progressPath.addArc(
-    { x: STROKE_WIDTH / 2, y: STROKE_WIDTH / 2, width: RING_SIZE - STROKE_WIDTH, height: RING_SIZE - STROKE_WIDTH },
-    -90,
-    sweepAngle
-  );
+  const progressPath = useDerivedValue(() => {
+    const path = Skia.Path.Make();
+    path.addArc(
+      { x: CENTER - RADIUS, y: CENTER - RADIUS, width: RADIUS * 2, height: RADIUS * 2 },
+      -90,
+      sweepAngle.value
+    );
+    return path;
+  });
 
   const isFull = percent >= 100;
   const minutesRemaining = Math.max(0, Math.round(((100 - percent) / 100) * 38));
@@ -77,7 +87,7 @@ export default function Charge() {
       </Text>
 
       <View className="mt-8 items-center">
-        <Canvas style={{ width: RING_SIZE, height: RING_SIZE }}>
+        <Canvas style={{ width: CANVAS_SIZE, height: CANVAS_SIZE }}>
           <Group>
             <Path path={trackPath} style="stroke" strokeWidth={STROKE_WIDTH} color={TRACK_COLOR} />
             {/* Soft pulsing glow rendered behind the crisp progress arc */}
@@ -102,7 +112,7 @@ export default function Charge() {
           </Group>
         </Canvas>
 
-        <View className="absolute items-center" style={{ top: CENTER - 28, width: RING_SIZE }}>
+        <View className="absolute items-center" style={{ top: CENTER - 28, width: CANVAS_SIZE }}>
           <Text variant="h1" className="pb-0 text-5xl">
             {percent}%
           </Text>
