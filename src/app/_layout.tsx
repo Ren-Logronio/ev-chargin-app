@@ -12,7 +12,15 @@ import { authContext } from '@/modules/context/auth-context';
 import { MockAuthProvider } from '@/modules/mock-auth/providers/mock-auth-provider';
 import { MockAuthService } from '@/modules/mock-auth/services/mock-auth-service';
 
+import { ExpoLocationProvider } from '@/modules/expo-location/providers/expo-location-provider';
+import { ExpoLocationService } from '@/modules/expo-location/services/expo-location-service';
+
+import { MockAccountProvider } from '@/modules/mock-account/providers/mock-account-provider';
+import { MockAccountService } from '@/modules/mock-account/services/mock-account-service';
+
 const authService = new MockAuthService();
+const locationService = new ExpoLocationService();
+const accountService = new MockAccountService();
 
 // How Firebase auth is implemented and then injected
 // import { FirebaseAuthProvider } from '@/modules/firebase-auth/providers/firebase-auth-provider';
@@ -46,10 +54,14 @@ export default function RootLayout() {
 
   return (
     <MockAuthProvider authService={authService}>
-      <ThemeProvider value={NAV_THEME.dark}>
-        <GuardedStack />
-        <PortalHost />
-      </ThemeProvider>
+      <ExpoLocationProvider locationService={locationService}>
+        <MockAccountProvider accountService={accountService}>
+          <ThemeProvider value={NAV_THEME.dark}>
+            <GuardedStack />
+            <PortalHost />
+          </ThemeProvider>
+        </MockAccountProvider>
+      </ExpoLocationProvider>
     </MockAuthProvider>
   );
 }
