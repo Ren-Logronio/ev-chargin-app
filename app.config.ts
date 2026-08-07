@@ -7,7 +7,8 @@ const config: ExpoConfig = {
   "owner": "reinrein",
   "version": "1.0.0",
   "scheme": "eca",
-  "userInterfaceStyle": "automatic",
+  "userInterfaceStyle": "dark",
+  "backgroundColor": "#0a0a06",
   "web": {
     "bundler": "metro"
   },

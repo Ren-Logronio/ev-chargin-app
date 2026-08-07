@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { View } from 'react-native';
 import { z } from 'zod';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,7 @@ const loginSchema = z.object({
 });
 
 export default function Login() {
+  const insets = useSafeAreaInsets();
   const auth = useContext(authContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,7 +43,10 @@ export default function Login() {
   }
 
   return (
-    <View className="flex-1 justify-center gap-4 bg-background p-6">
+    <View
+      className="flex-1 justify-center gap-4 bg-background p-6"
+      style={{ paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }}
+    >
       <Text variant="h2">Log in</Text>
 
       <View className="gap-1.5">

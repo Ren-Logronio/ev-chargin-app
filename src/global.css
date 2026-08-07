@@ -3,40 +3,44 @@
 @tailwind utilities;
 
 @layer base {
+    /* Forced dark-only theme: `:root` intentionally mirrors `.dark` below.
+       Do not reintroduce separate light values without also fixing the
+       userInterfaceStyle/colorScheme wiring in app.config.ts and _layout.tsx,
+       or the app will flash light again. */
     :root {
-      --background: 0.0 0.0% 100.0%;
-      --foreground: 60.0 13.6% 4.1%;
-      --card: 0.0 0.0% 100.0%;
-      --card-foreground: 60.0 13.6% 4.1%;
-      --popover: 0.0 0.0% 100.0%;
-      --popover-foreground: 60.0 13.6% 4.1%;
-      --primary: 161.8 100.0% 23.9%;
+      --background: 60.0 13.6% 4.1%;
+      --foreground: 60.1 23.0% 98.1%;
+      --card: 60.0 13.7% 10.0%;
+      --card-foreground: 60.1 23.0% 98.1%;
+      --popover: 60.0 13.7% 10.0%;
+      --popover-foreground: 60.1 23.0% 98.1%;
+      --primary: 163.0 100.0% 18.9%;
       --primary-foreground: 151.8 80.9% 95.8%;
-      --secondary: 240.0 3.5% 95.8%;
-      --secondary-foreground: 240.0 6.0% 10.0%;
-      --muted: 60.0 14.6% 94.9%;
-      --muted-foreground: 60.0 9.3% 44.5%;
-      --accent: 60.0 14.6% 94.9%;
-      --accent-foreground: 60.0 13.7% 10.0%;
-      --destructive: 357.2 100.0% 45.3%;
+      --secondary: 240.0 4.0% 15.9%;
+      --secondary-foreground: 180.0 0.0% 98.0%;
+      --muted: 60.0 11.8% 15.1%;
+      --muted-foreground: 60.0 8.2% 64.1%;
+      --accent: 60.0 11.8% 15.1%;
+      --accent-foreground: 60.1 23.0% 98.1%;
+      --destructive: 358.7 100.0% 69.6%;
       --destructive-foreground: 180.0 0.0% 98.0%;
-      --border: 60.0 10.3% 90.0%;
-      --input: 60.0 10.3% 90.0%;
-      --ring: 60.0 8.2% 64.1%;
+      --border: 0.0 0.0% 100.0% / 10%;
+      --input: 0.0 0.0% 100.0% / 15%;
+      --ring: 60.0 9.3% 44.5%;
       --chart-1: 60.0 9.5% 83.1%;
       --chart-2: 60.0 9.3% 44.5%;
       --chart-3: 60.0 9.7% 32.5%;
       --chart-4: 60.0 11.1% 25.1%;
       --chart-5: 60.0 11.8% 15.1%;
       --radius: 0.625rem;
-      --sidebar: 60.1 23.0% 98.1%;
-      --sidebar-foreground: 60.0 13.6% 4.1%;
-      --sidebar-primary: 160.0 100.0% 29.9%;
-      --sidebar-primary-foreground: 151.8 80.9% 95.8%;
-      --sidebar-accent: 60.0 14.6% 94.9%;
-      --sidebar-accent-foreground: 60.0 13.7% 10.0%;
-      --sidebar-border: 60.0 10.3% 90.0%;
-      --sidebar-ring: 60.0 8.2% 64.1%;
+      --sidebar: 60.0 13.7% 10.0%;
+      --sidebar-foreground: 60.1 23.0% 98.1%;
+      --sidebar-primary: 159.7 100.0% 36.9%;
+      --sidebar-primary-foreground: 165.9 100.0% 8.7%;
+      --sidebar-accent: 60.0 11.8% 15.1%;
+      --sidebar-accent-foreground: 60.1 23.0% 98.1%;
+      --sidebar-border: 0.0 0.0% 100.0% / 10%;
+      --sidebar-ring: 60.0 9.3% 44.5%;
     }
 
     .dark {

@@ -11,9 +11,10 @@ export const DARK_MAP_STYLE: MapStyleElement[] = [
     stylers: [{ color: '#d4d4c2' }],
   },
   {
+    // Hides Google's default POI icons/labels (restaurants, shops, etc.) so the
+    // only pins on the map are ours (charging stations + current location).
     featureType: 'poi',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#8a8a76' }],
+    stylers: [{ visibility: 'off' }],
   },
   {
     featureType: 'poi.park',
@@ -21,9 +22,9 @@ export const DARK_MAP_STYLE: MapStyleElement[] = [
     stylers: [{ color: '#182016' }],
   },
   {
-    featureType: 'poi.park',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#4a5c40' }],
+    // Hides transit station icons/labels for the same reason.
+    featureType: 'transit.station',
+    stylers: [{ visibility: 'off' }],
   },
   {
     featureType: 'road',
@@ -59,11 +60,6 @@ export const DARK_MAP_STYLE: MapStyleElement[] = [
     featureType: 'transit',
     elementType: 'geometry',
     stylers: [{ color: '#242420' }],
-  },
-  {
-    featureType: 'transit.station',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#8a8a76' }],
   },
   {
     featureType: 'water',
